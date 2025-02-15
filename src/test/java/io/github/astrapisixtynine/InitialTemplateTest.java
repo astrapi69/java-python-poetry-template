@@ -1,7 +1,7 @@
 /**
  * The MIT License
  *
- * Copyright (C) 2022 Asterios Raptis
+ * Copyright (C) 2025 Asterios Raptis
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -64,37 +64,33 @@ class InitialTemplateTest
 	{
 		String concreteProjectName;
 		String concreteProjectWithDotsName;
-		String templateProjectName;
-		String templateProjectWithDotsName;
-		File sourceProjectDir;
-		File settingsGradle;
-		File dotGithubDir;
-		File codeOfConduct;
-		File readme;
-		File initialTemplateClassFile;
-		//
-		sourceProjectDir = PathFinder.getProjectDirectory();
-		templateProjectName = DependenciesInfo.JAVA_LIBRARY_TEMPLATE_NAME;
-		templateProjectWithDotsName = templateProjectName.replaceAll("-", ".");
+		String templateProjectName = "java-python-poetry-template";
+		String templateProjectWithDotsName = templateProjectName.replaceAll("-", ".");
+
+		File sourceProjectDir = PathFinder.getProjectDirectory();
 		concreteProjectName = sourceProjectDir.getName();
 		concreteProjectWithDotsName = concreteProjectName.replaceAll("-", ".");
-		// adapt settings.gradle file
-		settingsGradle = new File(sourceProjectDir, DependenciesInfo.SETTINGS_GRADLE_FILENAME);
+
+		// Adapt settings.gradle file
+		File settingsGradle = new File(sourceProjectDir, DependenciesInfo.SETTINGS_GRADLE_FILENAME);
 		ModifyFileExtensions.modifyFile(settingsGradle.toPath(),
 			(count, input) -> input.replaceAll(templateProjectName, concreteProjectName)
 				+ System.lineSeparator());
-		// adapt CODE_OF_CONDUCT.md file
-		dotGithubDir = new File(sourceProjectDir, DependenciesInfo.DOT_GITHUB_DIRECTORY_NAME);
-		codeOfConduct = new File(dotGithubDir, DependenciesInfo.CODE_OF_CONDUCT_FILENAME);
+
+		// Adapt CODE_OF_CONDUCT.md file
+		File dotGithubDir = new File(sourceProjectDir, DependenciesInfo.DOT_GITHUB_DIRECTORY_NAME);
+		File codeOfConduct = new File(dotGithubDir, DependenciesInfo.CODE_OF_CONDUCT_FILENAME);
 		ModifyFileExtensions.modifyFile(codeOfConduct.toPath(),
 			(count, input) -> input.replaceAll(templateProjectName, concreteProjectName)
 				+ System.lineSeparator());
-		// delete template class
-		initialTemplateClassFile = PathFinder.getRelativePath(PathFinder.getSrcMainJavaDir(), "io",
-			"github", "astrapi69", "InitialTemplate.java");
+
+		// Delete template class
+		File initialTemplateClassFile = PathFinder.getRelativePath(PathFinder.getSrcMainJavaDir(),
+			"io", "github", "astrapi69", "InitialTemplate.java");
 
 		DeleteFileExtensions.delete(initialTemplateClassFile);
-		// change projectDescription from gradle.properties
+
+		// Change project description from gradle.properties
 		File gradleProperties = FileFactory.newFile(sourceProjectDir,
 			DependenciesInfo.GRADLE_PROPERTIES_FILENAME);
 
@@ -104,8 +100,8 @@ class InitialTemplateTest
 					"projectDescription=Template project for create java library projects",
 					"projectDescription=" + projectDescription) + System.lineSeparator());
 
-		// adapt README.md file
-		readme = new File(sourceProjectDir, DependenciesInfo.README_FILENAME);
+		// Adapt README.md file
+		File readme = new File(sourceProjectDir, DependenciesInfo.README_FILENAME);
 		ModifyFileExtensions.modifyFile(readme.toPath(),
 			(count, input) -> input.replaceAll(templateProjectName, concreteProjectName)
 				+ System.lineSeparator());
@@ -125,29 +121,25 @@ class InitialTemplateTest
 					DependenciesExtensions.getProjectVersionKeyName(concreteProjectName))
 					+ System.lineSeparator());
 
-		// create run configurations for current project
-		String sourceProjectDirNamePrefix;
-		String targetProjectDirNamePrefix;
+		// Create run configurations for current project
+		String sourceProjectDirNamePrefix = sourceProjectDir.getParent() + "/";
+		String targetProjectDirNamePrefix = sourceProjectDirNamePrefix;
 		CopyGradleRunConfigurations copyGradleRunConfigurationsData;
-		String sourceProjectName;
-		String targetProjectName;
-		sourceProjectName = templateProjectName;
-		targetProjectName = concreteProjectName;
-		sourceProjectDirNamePrefix = sourceProjectDir.getParent() + "/";
-		targetProjectDirNamePrefix = sourceProjectDirNamePrefix;
+		String sourceProjectName = templateProjectName;
+		String targetProjectName = concreteProjectName;
+
 		copyGradleRunConfigurationsData = GradleRunConfigurationsCopier
 			.newCopyGradleRunConfigurations(sourceProjectName, targetProjectName,
 				sourceProjectDirNamePrefix, targetProjectDirNamePrefix, true, true);
 		GradleRunConfigurationsCopier.of(copyGradleRunConfigurationsData).copy();
 
-		// delete template run configurations
+		// Delete template run configurations
 		RuntimeExceptionDecorator.decorate(() -> DeleteFileExtensions.deleteFilesWithFileFilter(
 			copyGradleRunConfigurationsData.getIdeaTargetDir(),
-			new PrefixFileFilter("java_library_template", false)));
+			new PrefixFileFilter(templateProjectName, false)));
 
-		// remove section 'Template from this project'
+		// Remove template-specific section in README.md
 		removeTemplateSection(readme);
-
 	}
 
 	private static void removeTemplateSection(File readme) throws IOException
