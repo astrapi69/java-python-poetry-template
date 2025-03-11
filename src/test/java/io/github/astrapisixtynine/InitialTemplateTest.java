@@ -77,6 +77,12 @@ class InitialTemplateTest
 			(count, input) -> input.replaceAll(templateProjectName, concreteProjectName)
 				+ System.lineSeparator());
 
+		// Adapt pyproject.toml file
+		File pyprojectToml = new File(sourceProjectDir, "pyproject.toml");
+		ModifyFileExtensions.modifyFile(pyprojectToml.toPath(),
+				(count, input) -> input.replaceAll(templateProjectName, concreteProjectName)
+						+ System.lineSeparator());
+
 		// Adapt CODE_OF_CONDUCT.md file
 		File dotGithubDir = new File(sourceProjectDir, DependenciesInfo.DOT_GITHUB_DIRECTORY_NAME);
 		File codeOfConduct = new File(dotGithubDir, DependenciesInfo.CODE_OF_CONDUCT_FILENAME);
