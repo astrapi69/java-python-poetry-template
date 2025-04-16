@@ -21,6 +21,5 @@ versionCatalogUpdate {
         // libraries = [libs.my.library.reference, libs.my.other.library.reference]
         // plugins = [libs.plugins.my.plugin, libs.plugins.my.other.plugin]
         // groups = ["com.somegroup", "com.someothergroup"]
-
     }
 }
